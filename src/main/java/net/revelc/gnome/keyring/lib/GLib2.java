@@ -24,4 +24,5 @@ import com.sun.jna.Library;
 public interface GLib2 extends Library {
 
   void g_set_application_name(String string);
+
 }

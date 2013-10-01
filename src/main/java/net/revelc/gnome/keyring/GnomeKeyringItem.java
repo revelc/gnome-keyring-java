@@ -16,8 +16,13 @@
  */
 package net.revelc.gnome.keyring;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import net.revelc.gnome.keyring.lib.GnomeKeyringAttribute;
+import net.revelc.gnome.keyring.lib.GnomeKeyringAttributeList;
 import net.revelc.gnome.keyring.lib.GnomeKeyringLibrary;
 import net.revelc.gnome.keyring.lib.GnomeKeyringResult;
 
@@ -29,15 +34,13 @@ import com.sun.jna.ptr.PointerByReference;
  */
 public class GnomeKeyringItem {
 
-  private GnomeKeyringLibrary gklib;
   private String keyring;
   private int id;
 
   private String type, displayName, secret;
   private Date ctime, mtime;
 
-  GnomeKeyringItem(GnomeKeyringLibrary gklib, String keyring, int id, String type, String displayName, String secret, Date ctime, Date mtime) {
-    this.gklib = gklib;
+  GnomeKeyringItem(String keyring, int id, String type, String displayName, String secret, Date ctime, Date mtime) {
     this.keyring = keyring;
     this.id = id;
     this.type = type;
@@ -67,23 +70,26 @@ public class GnomeKeyringItem {
     return mtime;
   }
 
-  public String[] getAttributes() throws GnomeKeyringException {
-    PointerByReference attributes_ref = new PointerByReference();
-    Pointer attributes = null;
-    try {
-      int r = gklib.gnome_keyring_item_get_attributes_sync(keyring, id, attributes_ref);
-      GnomeKeyringResult result = GnomeKeyringResult.fromValue(r);
-      switch (result) {
-        case GNOME_KEYRING_RESULT_OK:
-          attributes = attributes_ref.getValue();
-          return null;
-        default:
-          throw new GnomeKeyringException(result.toString());
+  public Map<String,String> getAttributes() throws GnomeKeyringException {
+    PointerByReference pref = new PointerByReference();
+    GnomeKeyringLibrary gklib = GnomeKeyring.getInstance();
+    GnomeKeyringResult result = new GnomeKeyringResult(gklib.gnome_keyring_item_get_attributes_sync(keyring, id, pref));
+    if (result.success()) {
+      Pointer p = pref.getValue();
+      GnomeKeyringAttributeList gkal = new GnomeKeyringAttributeList(p);
+      if (gkal.len > 0) {
+        GnomeKeyringAttribute attrib = new GnomeKeyringAttribute(gkal.data);
+        GnomeKeyringAttribute[] attribArray = (GnomeKeyringAttribute[]) attrib.toArray(gkal.len);
+        HashMap<String,String> attributes = new HashMap<String,String>();
+        for (GnomeKeyringAttribute gka : attribArray)
+          attributes.put(gka.name, gka.getValue());
+        gklib.gnome_keyring_attribute_list_free(p);
+        return attributes;
+      } else {
+        return Collections.emptyMap();
       }
-    } finally {
-      if (attributes != null)
-        gklib.gnome_keyring_item_info_free(attributes);
+    } else {
+      return result.error();
     }
   }
-
 }

@@ -16,35 +16,30 @@
  */
 package net.revelc.gnome.keyring.lib;
 
+import net.revelc.gnome.keyring.GnomeKeyring;
+import net.revelc.gnome.keyring.GnomeKeyringException;
+
 /**
  * 
  */
-public enum GnomeKeyringResult {
-  UNKNOWN_RESULT_TYPE(-1),
-  GNOME_KEYRING_RESULT_OK(0),
-  GNOME_KEYRING_RESULT_DENIED(1),
-  GNOME_KEYRING_RESULT_NO_KEYRING_DAEMON(2),
-  GNOME_KEYRING_RESULT_ALREADY_UNLOCKED(3),
-  GNOME_KEYRING_RESULT_NO_SUCH_KEYRING(4),
-  GNOME_KEYRING_RESULT_BAD_ARGUMENTS(5),
-  GNOME_KEYRING_RESULT_IO_ERROR(6),
-  GNOME_KEYRING_RESULT_CANCELLED(7),
-  GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS(8),
-  GNOME_KEYRING_RESULT_NO_MATCH(9);
+public class GnomeKeyringResult {
+  public static final int OK = 0;
 
-  private int val;
+  private int code;
 
-  private GnomeKeyringResult(int val) {
-    this.val = val;
+  /**
+   * 
+   */
+  public GnomeKeyringResult(int code) {
+    this.code = code;
   }
 
-  public static GnomeKeyringResult fromValue(int val) {
-    if (val >= 0) {
-      for (GnomeKeyringResult t : GnomeKeyringResult.values()) {
-        if (t.val == val)
-          return t;
-      }
-    }
-    return UNKNOWN_RESULT_TYPE;
+  public boolean success() {
+    return code == OK;
   }
+
+  public <T> T error() throws GnomeKeyringException {
+    throw new GnomeKeyringException(GnomeKeyring.getInstance().gnome_keyring_result_to_message(code));
+  }
+
 }

@@ -16,6 +16,8 @@
  */
 package net.revelc.gnome.keyring;
 
+import java.util.Map.Entry;
+
 /**
  * 
  */
@@ -23,11 +25,16 @@ public class Example {
 
   public static void main(String[] args) throws GnomeKeyringException {
     GnomeKeyring gk = new GnomeKeyring();
-    GnomeKeyringItem item = gk.getItem("login", 7, true);
-    System.out.println(item.getType());
-    System.out.println(item.getDisplayName());
-    System.out.println(item.getSecret());
-    System.out.println(item.getCTime());
-    System.out.println(item.getMTime());
+    GnomeKeyringItem item = gk.getItem("login", 4, true);
+    int keyLength = 20;
+    String formatString = "%-" + keyLength + "s: %s\n";
+    System.out.printf(formatString, "Type", item.getType());
+    System.out.printf(formatString, "DisplayName", item.getDisplayName());
+    System.out.printf(formatString, "Secret", item.getSecret());
+    System.out.printf(formatString, "CTime", item.getCTime());
+    System.out.printf(formatString, "MTime", item.getMTime());
+    for (Entry<String,String> attrib : item.getAttributes().entrySet()) {
+      System.out.printf(formatString, "Attrib:" + attrib.getKey(), attrib.getValue());
+    }
   }
 }

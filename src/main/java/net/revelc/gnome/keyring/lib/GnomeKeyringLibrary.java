@@ -25,6 +25,8 @@ import com.sun.jna.ptr.PointerByReference;
  */
 public interface GnomeKeyringLibrary extends Library {
 
+  void gnome_keyring_attribute_list_free(Pointer p);
+
   int gnome_keyring_item_get_attributes_sync(String keyring, int id, PointerByReference attributes);
 
   int gnome_keyring_item_get_info_full_sync(String keyring, int id, int flags, PointerByReference item_info);
@@ -42,4 +44,6 @@ public interface GnomeKeyringLibrary extends Library {
   int gnome_keyring_item_info_get_type(Pointer item_info);
 
   Pointer gnome_keyring_item_info_new();
+
+  String gnome_keyring_result_to_message(int r);
 }

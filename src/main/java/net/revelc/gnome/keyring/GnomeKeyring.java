@@ -16,12 +16,18 @@
  */
 package net.revelc.gnome.keyring;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
+import net.revelc.gnome.keyring.GnomeKeyringItem.Attribute;
+import net.revelc.gnome.keyring.lib.GKAttributeList;
+import net.revelc.gnome.keyring.lib.GKAttributeStruct;
+import net.revelc.gnome.keyring.lib.GKItemType;
+import net.revelc.gnome.keyring.lib.GKLib;
+import net.revelc.gnome.keyring.lib.GKResult;
 import net.revelc.gnome.keyring.lib.GLib2;
-import net.revelc.gnome.keyring.lib.GnomeKeyringItemType;
-import net.revelc.gnome.keyring.lib.GnomeKeyringLibrary;
-import net.revelc.gnome.keyring.lib.GnomeKeyringResult;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -32,42 +38,64 @@ import com.sun.jna.ptr.PointerByReference;
  */
 public class GnomeKeyring {
 
-  private static final GLib2 glib2 = (GLib2) Native.loadLibrary("glib-2.0", GLib2.class);
-  private static final GnomeKeyringLibrary gklib = (GnomeKeyringLibrary) Native.loadLibrary("gnome-keyring", GnomeKeyringLibrary.class);
-  {
-    glib2.g_set_application_name("GnomeKeyringJava");
-  }
-
-  public static GnomeKeyringLibrary getInstance() {
-    return gklib;
-  }
+  final GLib2 glib2;
+  final GKLib gklib;
 
   /**
    * 
    */
-  public GnomeKeyring() {}
+  public GnomeKeyring() {
+    this("GnomeKeyringJava");
+  }
 
-  public GnomeKeyring(String applicationName) {}
+  public GnomeKeyring(String applicationName) {
+    glib2 = (GLib2) Native.loadLibrary("glib-2.0", GLib2.class);
+    gklib = (GKLib) Native.loadLibrary("gnome-keyring", GKLib.class);
+    glib2.g_set_application_name(applicationName);
+  }
 
   public GnomeKeyringItem getItem(String keyring, int id, boolean includeSecret) throws GnomeKeyringException {
     PointerByReference item_info_ref = new PointerByReference();
     Pointer item_info = null;
     try {
-      GnomeKeyringResult result = new GnomeKeyringResult(gklib.gnome_keyring_item_get_info_full_sync(keyring, id, includeSecret ? 1 : 0, item_info_ref));
+      GKResult result = new GKResult(gklib, gklib.gnome_keyring_item_get_info_full_sync(keyring, id, includeSecret ? 1 : 0, item_info_ref));
       if (result.success()) {
         item_info = item_info_ref.getValue();
-        String type = GnomeKeyringItemType.fromValue(gklib.gnome_keyring_item_info_get_type(item_info)).toString();
+        String type = GKItemType.fromValue(gklib.gnome_keyring_item_info_get_type(item_info)).toString();
         String display = gklib.gnome_keyring_item_info_get_display_name(item_info);
         String secret = gklib.gnome_keyring_item_info_get_secret(item_info);
         Date ctime = new Date(gklib.gnome_keyring_item_info_get_ctime(item_info) * 1000);
         Date mtime = new Date(gklib.gnome_keyring_item_info_get_mtime(item_info) * 1000);
-        return new GnomeKeyringItem(keyring, id, type, display, secret, ctime, mtime);
+        Set<Attribute<?>> attributes = getItemAttributes(keyring, id);
+        return new GnomeKeyringItem(type, display, secret, ctime, mtime, attributes);
       } else {
         return result.error();
       }
     } finally {
       if (item_info != null)
         gklib.gnome_keyring_item_info_free(item_info);
+    }
+  }
+
+  private Set<Attribute<?>> getItemAttributes(String keyring, int id) throws GnomeKeyringException {
+    Set<Attribute<?>> attributes = new TreeSet<Attribute<?>>();
+    PointerByReference pref = new PointerByReference();
+    GKResult result = new GKResult(gklib, gklib.gnome_keyring_item_get_attributes_sync(keyring, id, pref));
+    if (result.success()) {
+      Pointer p = pref.getValue();
+      GKAttributeList gkal = new GKAttributeList(p);
+      if (gkal.len > 0) {
+        GKAttributeStruct attrib = new GKAttributeStruct(gkal.data);
+        GKAttributeStruct[] attribArray = (GKAttributeStruct[]) attrib.toArray(gkal.len);
+        for (GKAttributeStruct gka : attribArray)
+          attributes.add(new Attribute<Object>(gka.name, gka.getValue()));
+        gklib.gnome_keyring_attribute_list_free(p);
+        return attributes;
+      } else {
+        return Collections.emptySet();
+      }
+    } else {
+      return result.error();
     }
   }
 }

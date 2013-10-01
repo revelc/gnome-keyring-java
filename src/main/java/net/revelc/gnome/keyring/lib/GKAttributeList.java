@@ -6,14 +6,14 @@ import java.util.List;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
-public class GnomeKeyringAttributeList extends Structure implements Structure.ByReference {
+public class GKAttributeList extends Structure {
 
   public Pointer data;
   public int len;
 
-  public GnomeKeyringAttributeList() {}
+  public GKAttributeList() {}
 
-  public GnomeKeyringAttributeList(Pointer p) {
+  public GKAttributeList(Pointer p) {
     super(p);
     read();
   }

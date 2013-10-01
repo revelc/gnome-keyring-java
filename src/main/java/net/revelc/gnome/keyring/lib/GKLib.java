@@ -23,7 +23,7 @@ import com.sun.jna.ptr.PointerByReference;
 /**
  * 
  */
-public interface GnomeKeyringLibrary extends Library {
+public interface GKLib extends Library {
 
   void gnome_keyring_attribute_list_free(Pointer p);
 

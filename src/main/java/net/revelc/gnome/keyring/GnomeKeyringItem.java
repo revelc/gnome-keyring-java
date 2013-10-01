@@ -16,80 +16,131 @@
  */
 package net.revelc.gnome.keyring;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
-import net.revelc.gnome.keyring.lib.GnomeKeyringAttribute;
-import net.revelc.gnome.keyring.lib.GnomeKeyringAttributeList;
-import net.revelc.gnome.keyring.lib.GnomeKeyringLibrary;
-import net.revelc.gnome.keyring.lib.GnomeKeyringResult;
-
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
+import javax.security.auth.DestroyFailedException;
+import javax.security.auth.Destroyable;
 
 /**
  * 
  */
-public class GnomeKeyringItem {
+public class GnomeKeyringItem implements Destroyable, Comparable<GnomeKeyringItem> {
 
-  private String keyring;
-  private int id;
+  public static class Attribute<T> implements Comparable<Attribute<?>> {
 
-  private String type, displayName, secret;
+    private String name;
+    private T value;
+
+    Attribute(String name, T value) {
+      if (name == null || value == null)
+        throw new IllegalArgumentException("Name and Value must not be null");
+      this.name = name;
+      this.value = value;
+    }
+
+    @Override
+    public int compareTo(Attribute<?> o) {
+      return name.compareTo(o.name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj instanceof Attribute))
+        return false;
+      Attribute<?> other = (Attribute<?>) obj;
+      return (name.equals(other.name) && value.getClass().equals(other.value.getClass()) && value.equals(other.value));
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public T getValue() {
+      return value;
+    }
+
+    @Override
+    public int hashCode() {
+      return name.hashCode() + value.hashCode();
+    }
+  }
+
+  private static boolean fieldsEqual(Object a, Object b) {
+    if (a == null || b == null)
+      return a == null && b == null;
+    else
+      return a == b || a.equals(b);
+  }
+
+  private String type, displayName = "", secret;
+
   private Date ctime, mtime;
 
-  GnomeKeyringItem(String keyring, int id, String type, String displayName, String secret, Date ctime, Date mtime) {
-    this.keyring = keyring;
-    this.id = id;
+  private Set<Attribute<?>> attributes;
+
+  GnomeKeyringItem(String type, String displayName, String secret, Date ctime, Date mtime, Set<Attribute<?>> attributes) {
     this.type = type;
-    this.displayName = displayName;
+    this.displayName = displayName != null ? displayName : "";
     this.secret = secret;
     this.ctime = ctime;
     this.mtime = mtime;
+    this.attributes = attributes;
   }
 
-  public String getType() {
-    return type;
+  @Override
+  public int compareTo(GnomeKeyringItem o) {
+    return getDisplayName().compareTo(o.getDisplayName());
   }
 
-  public String getDisplayName() {
-    return displayName;
+  @Override
+  public void destroy() throws DestroyFailedException {
+    if (secret != null) {
+      secret = null;
+    }
   }
 
-  public String getSecret() {
-    return secret;
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !(obj instanceof GnomeKeyringItem))
+      return false;
+    GnomeKeyringItem o = (GnomeKeyringItem) obj;
+    return fieldsEqual(displayName, o.displayName) && fieldsEqual(type, o.type) && fieldsEqual(secret, o.secret) && fieldsEqual(ctime, o.ctime)
+        && fieldsEqual(mtime, o.mtime) && fieldsEqual(attributes, o.attributes);
+  }
+
+  public Set<Attribute<?>> getAttributes() {
+    return attributes;
   }
 
   public Date getCTime() {
     return ctime;
   }
 
+  public String getDisplayName() {
+    return displayName;
+  }
+
   public Date getMTime() {
     return mtime;
   }
 
-  public Map<String,String> getAttributes() throws GnomeKeyringException {
-    PointerByReference pref = new PointerByReference();
-    GnomeKeyringLibrary gklib = GnomeKeyring.getInstance();
-    GnomeKeyringResult result = new GnomeKeyringResult(gklib.gnome_keyring_item_get_attributes_sync(keyring, id, pref));
-    if (result.success()) {
-      Pointer p = pref.getValue();
-      GnomeKeyringAttributeList gkal = new GnomeKeyringAttributeList(p);
-      if (gkal.len > 0) {
-        GnomeKeyringAttribute attrib = new GnomeKeyringAttribute(gkal.data);
-        GnomeKeyringAttribute[] attribArray = (GnomeKeyringAttribute[]) attrib.toArray(gkal.len);
-        HashMap<String,String> attributes = new HashMap<String,String>();
-        for (GnomeKeyringAttribute gka : attribArray)
-          attributes.put(gka.name, gka.getValue());
-        gklib.gnome_keyring_attribute_list_free(p);
-        return attributes;
-      } else {
-        return Collections.emptyMap();
-      }
-    } else {
-      return result.error();
-    }
+  public String getSecret() {
+    return secret;
   }
+
+  public String getType() {
+    return type;
+  }
+
+  @Override
+  public int hashCode() {
+    return displayName.hashCode();
+  }
+
+  @Override
+  public boolean isDestroyed() {
+    return secret == null;
+  }
+
 }

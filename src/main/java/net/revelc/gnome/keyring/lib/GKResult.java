@@ -16,41 +16,31 @@
  */
 package net.revelc.gnome.keyring.lib;
 
+import net.revelc.gnome.keyring.GnomeKeyringException;
+
 /**
  * 
  */
-public enum GnomeKeyringItemType {
-  UNKNOWN_ITEM_TYPE(-1),
+public class GKResult {
+  public static final int OK = 0;
 
-  /* The item types */
-  GNOME_KEYRING_ITEM_GENERIC_SECRET(0),
+  private final GKLib gklib;
+  private int code;
 
-  GNOME_KEYRING_ITEM_NETWORK_PASSWORD(1),
-
-  GNOME_KEYRING_ITEM_NOTE(2),
-
-  GNOME_KEYRING_ITEM_CHAINED_KEYRING_PASSWORD(3),
-
-  GNOME_KEYRING_ITEM_ENCRYPTION_KEY_PASSWORD(4),
-
-  GNOME_KEYRING_ITEM_PK_STORAGE(0x100),
-
-  /* Not used, remains here only for compatibility */
-  GNOME_KEYRING_ITEM_LAST_TYPE(0x101);
-
-  private int val;
-
-  private GnomeKeyringItemType(int val) {
-    this.val = val;
+  /**
+   * 
+   */
+  public GKResult(GKLib gklib, int code) {
+    this.gklib = gklib;
+    this.code = code;
   }
 
-  public static GnomeKeyringItemType fromValue(int val) {
-    if (val >= 0) {
-      for (GnomeKeyringItemType t : GnomeKeyringItemType.values()) {
-        if (t.val == val)
-          return t;
-      }
-    }
-    return UNKNOWN_ITEM_TYPE;
+  public <T> T error() throws GnomeKeyringException {
+    throw new GnomeKeyringException(gklib.gnome_keyring_result_to_message(code));
   }
+
+  public boolean success() {
+    return code == OK;
+  }
+
 }

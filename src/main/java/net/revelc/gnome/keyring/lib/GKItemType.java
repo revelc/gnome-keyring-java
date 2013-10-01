@@ -16,30 +16,39 @@
  */
 package net.revelc.gnome.keyring.lib;
 
-import net.revelc.gnome.keyring.GnomeKeyring;
-import net.revelc.gnome.keyring.GnomeKeyringException;
-
 /**
  * 
  */
-public class GnomeKeyringResult {
-  public static final int OK = 0;
+public enum GKItemType {
+  /* The item types */
+  GNOME_KEYRING_ITEM_GENERIC_SECRET(0),
 
-  private int code;
+  GNOME_KEYRING_ITEM_NETWORK_PASSWORD(1),
 
-  /**
-   * 
-   */
-  public GnomeKeyringResult(int code) {
-    this.code = code;
+  GNOME_KEYRING_ITEM_NOTE(2),
+
+  GNOME_KEYRING_ITEM_CHAINED_KEYRING_PASSWORD(3),
+
+  GNOME_KEYRING_ITEM_ENCRYPTION_KEY_PASSWORD(4),
+
+  GNOME_KEYRING_ITEM_PK_STORAGE(0x100),
+
+  /* Not used, remains here only for compatibility */
+  GNOME_KEYRING_ITEM_LAST_TYPE(0x101);
+
+  public static GKItemType fromValue(int val) {
+    if (val >= 0) {
+      for (GKItemType t : GKItemType.values()) {
+        if (t.val == val)
+          return t;
+      }
+    }
+    throw new IllegalArgumentException("Unrecognized ordinal: " + val);
   }
 
-  public boolean success() {
-    return code == OK;
-  }
+  private int val;
 
-  public <T> T error() throws GnomeKeyringException {
-    throw new GnomeKeyringException(GnomeKeyring.getInstance().gnome_keyring_result_to_message(code));
+  private GKItemType(int val) {
+    this.val = val;
   }
-
 }

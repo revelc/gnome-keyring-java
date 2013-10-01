@@ -26,24 +26,24 @@ import com.sun.jna.Union;
 /**
  * 
  */
-public class GnomeKeyringAttribute extends Structure implements Structure.ByReference {
+public class GKAttributeStruct extends Structure {
 
-  public static enum GnomeKeyringAttributeType {
+  public static enum AttributeType {
     GNOME_KEYRING_ATTRIBUTE_TYPE_STRING(0), GNOME_KEYRING_ATTRIBUTE_TYPE_UINT32(1);
-    private int val;
-
-    private GnomeKeyringAttributeType(int val) {
-      this.val = val;
-    }
-
-    public static GnomeKeyringAttributeType fromValue(int val) {
+    public static AttributeType fromValue(int val) {
       if (val >= 0) {
-        for (GnomeKeyringAttributeType t : GnomeKeyringAttributeType.values()) {
+        for (AttributeType t : AttributeType.values()) {
           if (t.val == val)
             return t;
         }
       }
       throw new IllegalArgumentException("Unrecognized ordinal: " + val);
+    }
+
+    private int val;
+
+    private AttributeType(int val) {
+      this.val = val;
     }
   }
 
@@ -56,25 +56,25 @@ public class GnomeKeyringAttribute extends Structure implements Structure.ByRefe
   public int type;
   public GnomeKeyringAttributeValue value;
 
-  public GnomeKeyringAttribute(Pointer p) {
+  public GKAttributeStruct(Pointer p) {
     super(p);
     read();
-  }
-
-  public String getValue() {
-    GnomeKeyringAttributeType t = GnomeKeyringAttributeType.fromValue(type);
-    switch (t) {
-      case GNOME_KEYRING_ATTRIBUTE_TYPE_STRING:
-        return (String) value.getTypedValue(String.class);
-      case GNOME_KEYRING_ATTRIBUTE_TYPE_UINT32:
-        return Integer.toString((Integer) value.getTypedValue(Integer.class));
-    }
-    return "";
   }
 
   @Override
   protected List<?> getFieldOrder() {
     return Arrays.asList(new String[] {"name", "type", "value"});
+  }
+
+  public Object getValue() {
+    AttributeType t = AttributeType.fromValue(type);
+    switch (t) {
+      case GNOME_KEYRING_ATTRIBUTE_TYPE_STRING:
+        return value.getTypedValue(String.class);
+      case GNOME_KEYRING_ATTRIBUTE_TYPE_UINT32:
+        return value.getTypedValue(Integer.class);
+    }
+    return "";
   }
 
 }

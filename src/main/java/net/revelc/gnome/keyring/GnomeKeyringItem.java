@@ -143,4 +143,21 @@ public class GnomeKeyringItem implements Destroyable, Comparable<GnomeKeyringIte
     return secret == null;
   }
 
+  @Override
+  public String toString() {
+    int keyLength = 30;
+    String formatString = "%-" + keyLength + "s: %s\n";
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(String.format(formatString, "Type", getType()));
+    sb.append(String.format(formatString, "DisplayName", getDisplayName()));
+    sb.append(String.format(formatString, "Secret", "**** " + (isDestroyed() ? "DESTROYED" : "HIDDEN") + " ****"));
+    // sb.append(String.format(formatString, "Secret", getSecret()));
+    sb.append(String.format(formatString, "CTime", getCTime()));
+    sb.append(String.format(formatString, "MTime", getMTime()));
+    for (Attribute<?> attrib : getAttributes())
+      sb.append(String.format(formatString, "Attrib[" + attrib.getValue().getClass().getSimpleName() + "]:" + attrib.getName(), attrib.getValue()));
+    return sb.toString();
+  }
+
 }

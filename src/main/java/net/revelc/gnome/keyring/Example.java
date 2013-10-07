@@ -16,25 +16,14 @@
  */
 package net.revelc.gnome.keyring;
 
-import net.revelc.gnome.keyring.GnomeKeyringItem.Attribute;
-
 /**
  * 
  */
 public class Example {
 
   public static void main(String[] args) throws GnomeKeyringException {
-    GnomeKeyring gk = new GnomeKeyring();
+    GnomeKeyring gk = new GnomeKeyring("Java Example");
     GnomeKeyringItem item = gk.getItem("login", 4, true);
-    int keyLength = 30;
-    String formatString = "%-" + keyLength + "s: %s\n";
-    System.out.printf(formatString, "Type", item.getType());
-    System.out.printf(formatString, "DisplayName", item.getDisplayName());
-    System.out.printf(formatString, "Secret", item.getSecret());
-    System.out.printf(formatString, "CTime", item.getCTime());
-    System.out.printf(formatString, "MTime", item.getMTime());
-    for (Attribute<?> attrib : item.getAttributes()) {
-      System.out.printf(formatString, "Attrib[" + attrib.getValue().getClass().getSimpleName() + "]:" + attrib.getName(), attrib.getValue());
-    }
+    System.out.println(item);
   }
 }

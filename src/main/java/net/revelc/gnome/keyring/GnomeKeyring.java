@@ -38,8 +38,8 @@ import com.sun.jna.ptr.PointerByReference;
  */
 public class GnomeKeyring {
 
-  final GLib2 glib2;
-  final GKLib gklib;
+  private final GLib2 glib2;
+  private final GKLib gklib;
 
   /**
    * 

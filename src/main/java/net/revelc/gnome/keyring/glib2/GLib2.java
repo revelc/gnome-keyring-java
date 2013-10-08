@@ -14,18 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.revelc.gnome.keyring;
+package net.revelc.gnome.keyring.glib2;
+
+import com.sun.jna.Library;
 
 /**
  * 
  */
-public class Example {
+public interface GLib2 extends Library {
 
-  public static void main(String[] args) throws GnomeKeyringException {
-    GnomeKeyring gk = new GnomeKeyring("Java Example");
-    String keyring = gk.getDefaultKeyring();
-    int id = gk.setNetworkPassword(keyring, null, "keyStore", "localhost", "fileName", "file", null, 0, "mySecret");
-    GnomeKeyringItem item = gk.getItem(keyring, id, true);
-    System.out.println("ID: " + id + "\n" + item);
-  }
+  static final String NAME = "glib-2.0";
+
+  void g_set_application_name(String string);
+
 }

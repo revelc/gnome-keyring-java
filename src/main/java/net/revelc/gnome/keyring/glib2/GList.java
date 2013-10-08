@@ -14,15 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.revelc.gnome.keyring.lib;
+package net.revelc.gnome.keyring.glib2;
 
-import com.sun.jna.Library;
+import java.util.Arrays;
+import java.util.List;
+
+import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 
 /**
  * 
  */
-public interface GLib2 extends Library {
+public class GList extends Structure {
 
-  void g_set_application_name(String string);
+  public Pointer data;
+  public Pointer next;
+  public Pointer prev;
 
+  public GList() {}
+
+  public GList(Pointer p) {
+    super(p);
+    read();
+  }
+
+  @Override
+  protected List<?> getFieldOrder() {
+    return Arrays.asList(new String[] {"data", "next", "prev"});
+  }
 }

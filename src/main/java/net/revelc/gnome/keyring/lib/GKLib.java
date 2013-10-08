@@ -18,12 +18,15 @@ package net.revelc.gnome.keyring.lib;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 /**
  * 
  */
 public interface GKLib extends Library {
+
+  static final String NAME = "gnome-keyring";
 
   void gnome_keyring_attribute_list_free(Pointer p);
 
@@ -46,4 +49,10 @@ public interface GKLib extends Library {
   Pointer gnome_keyring_item_info_new();
 
   String gnome_keyring_result_to_message(int r);
+
+  int gnome_keyring_set_network_password_sync(String keyring, String user, String domain, String server, String object, String protocol, String authtype,
+      int port, String password, IntByReference item_id);
+
+  int gnome_keyring_get_default_keyring_sync(PointerByReference keyring);
+
 }

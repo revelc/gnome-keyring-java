@@ -81,7 +81,7 @@ public class GnomeKeyringItem implements Destroyable, Comparable<GnomeKeyringIte
 
   GnomeKeyringItem(String type, String displayName, String secret, Date ctime, Date mtime, Set<Attribute<?>> attributes) {
     this.type = type;
-    this.displayName = displayName != null ? displayName : "";
+    this.displayName = displayName;
     this.secret = secret;
     this.ctime = ctime;
     this.mtime = mtime;
@@ -90,6 +90,10 @@ public class GnomeKeyringItem implements Destroyable, Comparable<GnomeKeyringIte
 
   @Override
   public int compareTo(GnomeKeyringItem o) {
+    if (o == null)
+      return -1;
+    if (getDisplayName() == null)
+      return o.getDisplayName() == null ? 0 : 1;
     return getDisplayName().compareTo(o.getDisplayName());
   }
 
@@ -145,14 +149,20 @@ public class GnomeKeyringItem implements Destroyable, Comparable<GnomeKeyringIte
 
   @Override
   public String toString() {
-    int keyLength = 30;
+    return toString(true);
+  }
+
+  public String toString(boolean showSecret) {
+    int keyLength = "DisplayName".length();
+    for (Attribute<?> attrib : getAttributes())
+      keyLength = Math.max(keyLength, "Attrib[]  ".length() + attrib.getName().length() + attrib.getValue().getClass().getSimpleName().length());
+
     String formatString = "%-" + keyLength + "s: %s\n";
 
     StringBuilder sb = new StringBuilder();
     sb.append(String.format(formatString, "Type", getType()));
     sb.append(String.format(formatString, "DisplayName", getDisplayName()));
-    sb.append(String.format(formatString, "Secret", "**** " + (isDestroyed() ? "DESTROYED" : "HIDDEN") + " ****"));
-    // sb.append(String.format(formatString, "Secret", getSecret()));
+    sb.append(String.format(formatString, "Secret", showSecret ? getSecret() : ("**** " + (isDestroyed() ? "DESTROYED" : "HIDDEN") + " ****")));
     sb.append(String.format(formatString, "CTime", getCTime()));
     sb.append(String.format(formatString, "MTime", getMTime()));
     for (Attribute<?> attrib : getAttributes())

@@ -14,18 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.revelc.gnome.keyring;
+package net.revelc.gnome.keyring.glib2;
+
+import java.util.Arrays;
+import java.util.List;
+
+import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 
 /**
  * 
  */
-public class Example {
+public class GArray extends Structure {
 
-  public static void main(String[] args) throws GnomeKeyringException {
-    GnomeKeyring gk = new GnomeKeyring("Java Example");
-    String keyring = gk.getDefaultKeyring();
-    int id = gk.setNetworkPassword(keyring, null, "keyStore", "localhost", "fileName", "file", null, 0, "mySecret");
-    GnomeKeyringItem item = gk.getItem(keyring, id, true);
-    System.out.println("ID: " + id + "\n" + item);
+  public Pointer data;
+  public int len;
+
+  public GArray() {}
+
+  public GArray(Pointer p) {
+    super(p);
+    read();
+  }
+
+  @Override
+  protected List<?> getFieldOrder() {
+    return Arrays.asList(new String[] {"data", "len"});
   }
 }

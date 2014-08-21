@@ -23,6 +23,7 @@ import java.util.TreeSet;
 
 import net.revelc.gnome.keyring.GnomeKeyringItem.Attribute;
 import net.revelc.gnome.keyring.glib2.GArray;
+import net.revelc.gnome.keyring.glib2.GList;
 import net.revelc.gnome.keyring.glib2.GLib2;
 import net.revelc.gnome.keyring.lib.GKAttributeStruct;
 import net.revelc.gnome.keyring.lib.GKItemType;
@@ -33,6 +34,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import  com.sun.jna.NativeMappedConverter;
 
 /**
  * 
@@ -174,5 +176,28 @@ public class GnomeKeyring {
     } else {
       return result.error();
     }
+  }
+
+  public Set<Integer> getIds(String keyring) {
+    Set<Integer> ids = new TreeSet<Integer>();
+
+    PointerByReference pref = new PointerByReference();
+    GKResult result = new GKResult(gklib, gklib.gnome_keyring_list_item_ids_sync(keyring, pref));
+    if (result.success()) {
+      Pointer p = pref.getValue();
+      GList gkal = new GList(p);
+      while(true) {
+        long id = Pointer.nativeValue(gkal.data);
+        ids.add((int)id);
+        if(gkal.next != Pointer.NULL) {
+            gkal = new GList(gkal.next);
+        } else {
+            break;
+        }
+    }
+      return ids;
+    }
+
+    return Collections.emptySet();
   }
 }

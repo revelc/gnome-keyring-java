@@ -55,4 +55,6 @@ public interface GKLib extends Library {
 
   int gnome_keyring_get_default_keyring_sync(PointerByReference keyring);
 
+  int gnome_keyring_list_item_ids_sync (String keyring, PointerByReference ids);
+
 }

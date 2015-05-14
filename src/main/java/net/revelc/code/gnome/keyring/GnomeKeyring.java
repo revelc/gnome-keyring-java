@@ -1,10 +1,7 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,21 +11,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.revelc.gnome.keyring;
+
+package net.revelc.code.gnome.keyring;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.revelc.gnome.keyring.GnomeKeyringItem.Attribute;
-import net.revelc.gnome.keyring.glib2.GArray;
-import net.revelc.gnome.keyring.glib2.GList;
-import net.revelc.gnome.keyring.glib2.GLib2;
-import net.revelc.gnome.keyring.lib.GKAttributeStruct;
-import net.revelc.gnome.keyring.lib.GKItemType;
-import net.revelc.gnome.keyring.lib.GKLib;
-import net.revelc.gnome.keyring.lib.GKResult;
+import net.revelc.code.gnome.keyring.GnomeKeyringItem.Attribute;
+import net.revelc.code.gnome.keyring.glib2.GArray;
+import net.revelc.code.gnome.keyring.glib2.GList;
+import net.revelc.code.gnome.keyring.glib2.GLib2;
+import net.revelc.code.gnome.keyring.lib.GKAttributeStruct;
+import net.revelc.code.gnome.keyring.lib.GKItemType;
+import net.revelc.code.gnome.keyring.lib.GKLib;
+import net.revelc.code.gnome.keyring.lib.GKResult;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;

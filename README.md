@@ -23,7 +23,7 @@ This project will use [Semantic Versioning 2.0.0][1] for its own versioning. How
 its public API not yet defined.
 
 [1]: http://semver.org/spec/v2.0.0.html
-[travis_img]: https://travis-ci.org/revelc/gnome-keyring-java.svg?branch=master
+[travis_img]: https://travis-ci.org/revelc/gnome-keyring-java.svg?branch=main
 [travis_link]: https://travis-ci.org/revelc/gnome-keyring-java
 [maven_img]: https://maven-badges.herokuapp.com/maven-central/net.revelc.code/gnome-keyring-java/badge.svg
 [maven_link]: https://maven-badges.herokuapp.com/maven-central/net.revelc.code/gnome-keyring-java

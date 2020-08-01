@@ -14,12 +14,11 @@
 
 package net.revelc.code.gnome.keyring.glib2;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.Structure.FieldOrder;
 
+@FieldOrder({"data", "len"})
 public class GArray extends Structure {
 
   public Pointer data;
@@ -30,10 +29,5 @@ public class GArray extends Structure {
   public GArray(Pointer p) {
     super(p);
     read();
-  }
-
-  @Override
-  protected List<?> getFieldOrder() {
-    return Arrays.asList(new String[] {"data", "len"});
   }
 }

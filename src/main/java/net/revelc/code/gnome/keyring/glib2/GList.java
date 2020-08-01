@@ -14,12 +14,11 @@
 
 package net.revelc.code.gnome.keyring.glib2;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.Structure.FieldOrder;
 
+@FieldOrder({"data", "next", "prev"})
 public class GList extends Structure {
 
   public Pointer data;
@@ -31,10 +30,5 @@ public class GList extends Structure {
   public GList(Pointer p) {
     super(p);
     read();
-  }
-
-  @Override
-  protected List<?> getFieldOrder() {
-    return Arrays.asList(new String[] {"data", "next", "prev"});
   }
 }

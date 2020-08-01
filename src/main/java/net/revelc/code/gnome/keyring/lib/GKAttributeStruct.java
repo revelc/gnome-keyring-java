@@ -14,17 +14,15 @@
 
 package net.revelc.code.gnome.keyring.lib;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.Union;
 
 public class GKAttributeStruct extends Structure {
 
-  public static enum AttributeType {
+  public enum AttributeType {
     GNOME_KEYRING_ATTRIBUTE_TYPE_STRING(0), GNOME_KEYRING_ATTRIBUTE_TYPE_UINT32(1);
+
     public static AttributeType fromValue(int val) {
       if (val >= 0) {
         for (AttributeType t : AttributeType.values()) {
@@ -42,6 +40,7 @@ public class GKAttributeStruct extends Structure {
     }
   }
 
+  @FieldOrder({"name", "type", "value"})
   public static class GnomeKeyringAttributeValue extends Union {
     public String string;
     public Integer integer;
@@ -54,11 +53,6 @@ public class GKAttributeStruct extends Structure {
   public GKAttributeStruct(Pointer p) {
     super(p);
     read();
-  }
-
-  @Override
-  protected List<?> getFieldOrder() {
-    return Arrays.asList(new String[] {"name", "type", "value"});
   }
 
   public Object getValue() {

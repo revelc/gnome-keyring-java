@@ -32,7 +32,6 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import  com.sun.jna.NativeMappedConverter;
 
 /**
  * 
@@ -49,8 +48,8 @@ public class GnomeKeyring {
    *          the name of the current GNU application
    */
   public GnomeKeyring(String applicationName) {
-    glib2 = (GLib2) Native.loadLibrary(GLib2.NAME, GLib2.class);
-    gklib = (GKLib) Native.loadLibrary(GKLib.NAME, GKLib.class);
+    glib2 = (GLib2) Native.load(GLib2.NAME, GLib2.class);
+    gklib = (GKLib) Native.load(GKLib.NAME, GKLib.class);
     if (applicationName != null && !applicationName.isEmpty())
       glib2.g_set_application_name(applicationName);
   }

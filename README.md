@@ -12,19 +12,21 @@
   limitations under the License.
 -->
 
-[![Build Status][travis_img]][travis_link] [![Maven Central][maven_img]][maven_link]
+[![mvn verify][ci_img]][ci_link]
+[![Maven Central][maven_img]][maven_link]
+[![License][license_img]][license_link]
 
-gnome-keyring-java
-==================
+# gnome-keyring-java
 
 A Java library for interacting with gnome-keyring-daemon using JNA.
 
 This project will use [Semantic Versioning 2.0.0][1] for its own versioning. However,
 its public API not yet defined.
 
-[1]: http://semver.org/spec/v2.0.0.html
-[travis_img]: https://travis-ci.org/revelc/gnome-keyring-java.svg?branch=main
-[travis_link]: https://travis-ci.org/revelc/gnome-keyring-java
+[1]: https://semver.org/spec/v2.0.0.html
+[ci_img]: https://github.com/revelc/gnome-keyring-java/workflows/mvn%20verify/badge.svg
+[ci_link]: https://github.com/revelc/gnome-keyring-java/actions
+[license_img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
+[license_link]: https://github.com/revelc/gnome-keyring-java/blob/main/LICENSE
 [maven_img]: https://maven-badges.herokuapp.com/maven-central/net.revelc.code/gnome-keyring-java/badge.svg
 [maven_link]: https://maven-badges.herokuapp.com/maven-central/net.revelc.code/gnome-keyring-java
-
